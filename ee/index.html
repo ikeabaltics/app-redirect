@@ -9,7 +9,7 @@
       var ua = navigator.userAgent || navigator.vendor || window.opera;
       var ios = "https://apps.apple.com/ee/app/ikea-home-furnishings/id1622334309";
       var android = "https://play.google.com/store/apps/details?id=com.ikea.inter.shoppableapp";
-      var fallback = "https://www.ikea.ee/";
+      var fallback = "https://www.ikea.com/ee";
       if (/android/i.test(ua)) window.location.href = android;
       else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) window.location.href = ios;
       else window.location.href = fallback;
