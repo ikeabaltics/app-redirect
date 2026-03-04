@@ -1,20 +1,137 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Open app (LT)</title>
-  <script>
-    (function () {
-      var ua = navigator.userAgent || navigator.vendor || window.opera;
-      var ios = "https://apps.apple.com/lv/app/ikea-home-furnishings/id1622334309";
-      var android = "https://play.google.com/store/apps/details?id=com.ikea.inter.shoppableapp";
-      var fallback = "https://www.ikea.com/lv";
-      if (/android/i.test(ua)) window.location.href = android;
-      else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) window.location.href = ios;
-      else window.location.href = fallback;
-    })();
-  </script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Open app (LV)</title>
+
+<script>
+(() => {
+
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+  // --- Campaign constants ---
+  const UTM = {
+    source: "ikea_web",
+    medium: "qr",
+    campaign: "app_download_w_auto_device_type",
+    content: "lv"
+  };
+
+  // Apple Campaign Links
+  const APPLE_PT = "YOUR_PT_TOKEN"; // replace with real pt
+  const APPLE_CT = "ikea_web_qr_lv";
+  const APPLE_MT = "8";
+
+  // Base store URLs
+  const IOS_BASE = "https://apps.apple.com/lv/app/ikea-home-furnishings/id1622334309";
+  const ANDROID_BASE = "https://play.google.com/store/apps/details?id=com.ikea.inter.shoppableapp";
+
+  // --- Build URLs with tracking ---
+  const buildIosUrl = () => {
+
+    const qs = [
+      `pt=${encodeURIComponent(APPLE_PT)}`,
+      `ct=${encodeURIComponent(APPLE_CT)}`,
+      `mt=${encodeURIComponent(APPLE_MT)}`,
+      `utm_source=${encodeURIComponent(UTM.source)}`,
+      `utm_medium=${encodeURIComponent(UTM.medium)}`,
+      `utm_campaign=${encodeURIComponent(UTM.campaign)}`,
+      `utm_content=${encodeURIComponent(UTM.content)}`
+    ].join("&");
+
+    return `${IOS_BASE}?${qs}`;
+  };
+
+  const buildAndroidUrl = () => {
+
+    const ref = [
+      `utm_source=${encodeURIComponent(UTM.source)}`,
+      `utm_medium=${encodeURIComponent(UTM.medium)}`,
+      `utm_campaign=${encodeURIComponent(UTM.campaign)}`,
+      `utm_content=${encodeURIComponent(UTM.content)}`
+    ].join("&");
+
+    const outer = [
+      `utm_source=${encodeURIComponent(UTM.source)}`,
+      `utm_medium=${encodeURIComponent(UTM.medium)}`,
+      `utm_campaign=${encodeURIComponent(UTM.campaign)}`,
+      `utm_content=${encodeURIComponent(UTM.content)}`
+    ].join("&");
+
+    return `${ANDROID_BASE}&referrer=${encodeURIComponent(ref)}&${outer}`;
+  };
+
+  const ios = buildIosUrl();
+  const android = buildAndroidUrl();
+
+  // Device detection
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+
+  const target = isAndroid ? android : (isIOS ? ios : ios);
+
+  // Reliable redirect
+  const go = (url) => {
+    try { window.location.replace(url); } catch(e) {}
+    setTimeout(() => {
+      try { window.location.href = url; } catch(e) {}
+    }, 120);
+  };
+
+  go(target);
+
+  // Fallback UI
+  setTimeout(() => {
+
+    const fallback = document.getElementById("fallback");
+    if (fallback) fallback.style.display = "block";
+
+    const btnIos = document.getElementById("btn-ios");
+    const btnAndroid = document.getElementById("btn-android");
+
+    if (btnIos) btnIos.href = ios;
+    if (btnAndroid) btnAndroid.href = android;
+
+  }, 900);
+
+})();
+</script>
+
+<style>
+#fallback{
+  display:none;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  padding:20px;
+}
+
+.btn{
+  display:block;
+  padding:12px 14px;
+  margin:10px 0;
+  text-decoration:none;
+  border:1px solid #ccc;
+  border-radius:10px;
+}
+</style>
+
 </head>
-<body></body>
+
+<body>
+
+<div id="fallback">
+  <div style="font-size:16px;margin-bottom:10px;">
+    If nothing happened, open the store manually:
+  </div>
+
+  <a class="btn" id="btn-ios" href="https://apps.apple.com/lv/app/ikea-home-furnishings/id1622334309">
+    Open in App Store
+  </a>
+
+  <a class="btn" id="btn-android" href="https://play.google.com/store/apps/details?id=com.ikea.inter.shoppableapp">
+    Open in Google Play
+  </a>
+</div>
+
+</body>
 </html>
